@@ -1,0 +1,34 @@
+{
+  "name": "cordova-plugin-android-beacon",
+  "version": "0.0.1",
+  "description": "An Android Cordova plugin that allows for background transmitting as an iBeacon.",
+  "cordova": {
+    "id": "cordova-plugin-android-beacon",
+    "platforms": [
+      "android"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nickbonnaud/beaconTest"
+  },
+  "keywords": [
+    "Background",
+    "Beacon",
+    "Transmit",
+    "ecosystem:cordova",
+    "cordova-android"
+  ],
+  "engines": [
+    {
+      "name": "cordova",
+      "version": ">=3.0.0"
+    }
+  ],
+  "author": "Nick Bonnaud <nick.bonnaud@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nickbonnaud/beaconTest/issues"
+  },
+  "homepage": "https://github.com/nickbonnaud/beaconTest"
+}
