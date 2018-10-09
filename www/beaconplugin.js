@@ -2,11 +2,16 @@
 function BeaconPlugin() {}
 
 // The function that passes work along to native shells
-BeaconPlugin.prototype.init = function(uuid, successCallback, errorCallback) {
+BeaconPlugin.prototype.start = function(uuid, successCallback, errorCallback) {
 	var options = {};
 	options.uuid = uuid;
 
-	cordova.exec(successCallback, errorCallback, 'BeaconPlugin', 'init', [options]);
+	cordova.exec(successCallback, errorCallback, 'BeaconPlugin', 'start', [options]);
+}
+
+BeaconPlugin.prototype.stop = function(successCallback, errorCallback) {
+	var options = {};
+	cordova.exec(successCallback, errorCallback, 'BeaconPlugin', 'stop', [options]);
 }
 
 // Installation constructor that binds BeaconPlugin to window

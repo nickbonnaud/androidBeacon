@@ -13,34 +13,32 @@ import org.altbeacon.beacon.BeaconTransmitter;
 public class BeaconHandler {
     private static final String TAG = BeaconHandler.class.getSimpleName();
     private String uuid;
+    private BeaconTransmitter mBeaconTransmitter;
 
-    public BeaconHandler(String uuid) {
+    BeaconHandler(String uuid) {
         this.uuid = uuid;
     }
 
-    public void init(Context context) {
-        startBeaconThread(context);
-    }
-
-    private void startBeaconThread(Context context) {
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                startBeacon(context);
-            }
-        };
+    public void start(Context context) {
+        Runnable runnable = () -> startBeacon(context);
         Thread thread = new Thread(runnable);
         thread.setName("Pockeyt Beacon Thread");
         thread.start();
+    }
+
+    public void stop() {
+        if (mBeaconTransmitter != null) {
+            mBeaconTransmitter.stopAdvertising();
+        }
     }
 
     @SuppressLint("NewApi")
     private void startBeacon(Context context) {
         Beacon beacon = setBeacon();
         BeaconParser beaconParser = setBeaconParser();
-        BeaconTransmitter beaconTransmitter = setBeaconTransmitter(context, beaconParser);
+        mBeaconTransmitter = setBeaconTransmitter(context, beaconParser);
 
-        beaconTransmitter.startAdvertising(beacon, new AdvertiseCallback() {
+        mBeaconTransmitter.startAdvertising(beacon, new AdvertiseCallback() {
             @Override
             public void onStartSuccess(AdvertiseSettings settingsInEffect) {
                 Log.d(TAG, "Started advertising success");

@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 
 public class BeaconService extends Service {
@@ -18,6 +19,7 @@ public class BeaconService extends Service {
     public static final String POCKEYT_BEACON_SERVICE = "pockeyt_beacon_service";
     public static final String POCKEYT_BEACON_CHANNEL = "pockeyt_beacon_channel";
     private boolean mRunning;
+    private BeaconHandler mBeaconHandler;
     private IBinder beaconBinder = new BeaconBinder();
 
     private class BeaconBinder extends Binder {}
@@ -35,11 +37,21 @@ public class BeaconService extends Service {
             createNotificationChannel();
             createForegroundNotification();
 
-            BeaconHandler beaconHandler = new BeaconHandler(intent.getStringExtra(BeaconPlugin.KEY_UUID));
-            beaconHandler.init(this);
+            mBeaconHandler = new BeaconHandler(intent.getStringExtra(BeaconPlugin.KEY_UUID));
+            mBeaconHandler.start(this);
             return Service.START_STICKY;
         }
         return super.onStartCommand(intent, flags, startId);
+    }
+
+    @Override
+    public void onDestroy() {
+        if (mRunning && mBeaconHandler != null) {
+            mRunning = false;
+            mBeaconHandler.stop();
+            deleteNotificationChannel();
+        }
+        super.onDestroy();
     }
 
     private void createNotificationChannel() {
@@ -51,14 +63,21 @@ public class BeaconService extends Service {
         }
     }
 
+    private void deleteNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.deleteNotificationChannel(POCKEYT_BEACON_CHANNEL);
+        }
+    }
+
     private void createForegroundNotification() {
-    	NotificationCompat.Builder builder = new NotificationCompat.Builder(this, POCKEYT_BEACON_SERVICE);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, POCKEYT_BEACON_SERVICE);
         builder.setSmallIcon(getResources().getIdentifier("ic_stat_beacon", "drawable", getPackageName()));
         builder.setContentTitle("Pockeyt Beacon");
         builder.setContentText("Pockeyt Beacon Running");
         Notification notification = builder.build();
 
-      startForeground(-1, notification);
+        startForeground(-1, notification);
     }
 
     @Nullable
